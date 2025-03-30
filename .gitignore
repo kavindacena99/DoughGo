@@ -1,0 +1,32 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store            # macOS
+Thumbs.db            # Windows
+
+# Build directories
+build/
+dist/
+
+# React Native specific
+android/
+ios/
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# OS generated files
+*.swp
+*.swo
