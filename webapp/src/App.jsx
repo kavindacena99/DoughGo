@@ -1,8 +1,20 @@
+import Navbar from "./components/Navbar";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+
 function App(){
   return(
-    <div>
-      <h1>DoughGo</h1>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} /> 
+        <Route path="/ownerdashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      </Routes>
+    </Router>
   );
 }
 
