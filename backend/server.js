@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const itemRoutes = require('./routes/itemRoutes');
 const { default: mongoose } = require('mongoose');
 
 dotenv.config(); // load environment variables from .env file
@@ -28,6 +29,7 @@ app.get("/", (req,res)=>{
 
 // Routes
 app.use("/api/auth",authRoutes);
+//app.use("/api/item",itemRoutes);
 
 
 // Start the server

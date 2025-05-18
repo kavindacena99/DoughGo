@@ -1,8 +1,10 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../services/api";
+
 function StoreItem(){
     return(
-        <div>
-            <h1>Store Items</h1>
-        </div>
+        <h1>Store to vehicle</h1>
     );
 }
 
