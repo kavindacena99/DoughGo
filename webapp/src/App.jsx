@@ -8,7 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 function App(){
   return(
     <Router>
-      {window.location.pathname !== "/" && <Navbar />}
+      {window.location.pathname !== "/" && window.location.pathname !== "/register" && <Navbar />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} /> 
