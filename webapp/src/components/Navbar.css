@@ -2,13 +2,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #007bff;
+  background-color: #FFBF00;
   padding: 0.5rem 1rem;
   font-family: Arial, sans-serif;
 }
 
 .navbar .brand {
-  color: white;
+  color: #333333;
   font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
@@ -21,7 +21,7 @@
 }
 
 .navbar .nav-links a {
-  color: white;
+  color: #333333;
   text-decoration: none;
   font-weight: 600;
   padding: 0.5rem 0.75rem;
@@ -30,13 +30,14 @@
 }
 
 .navbar .nav-links a:hover {
-  background-color: #0056b3;
+  background-color: #e6ac00;
 }
 
 .navbar .nav-links a.logout {
-  background-color: #dc3545;
+  background-color: #b35900;
+  color: white;
 }
 
 .navbar .nav-links a.logout:hover {
-  background-color: #a71d2a;
+  background-color: #804000;
 }

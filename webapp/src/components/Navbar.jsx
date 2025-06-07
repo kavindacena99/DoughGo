@@ -12,12 +12,13 @@ function Navbar(){
         navigate("/");
     };
 
+    const token = localStorage.getItem("token");
+
     return(
         <nav className="navbar">
             <Link to="/" className="brand">DoughGo</Link>
             <div className="nav-links">
-                <Link to="/register">Register</Link>
-                <a className="logout" onClick={handleLogout} style={{ cursor: "pointer" }}>Logout</a>
+                {token && <a className="logout" onClick={handleLogout} style={{ cursor: "pointer" }}>Logout</a>}
             </div>
         </nav>
     );
