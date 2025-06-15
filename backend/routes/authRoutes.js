@@ -35,17 +35,18 @@ router.post("/login",async (req,res)=>{
             return res.status(400).json({ message: "User not found" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await user.matchPassword(password);
 
         if(!isMatch){
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
         // generate JWT token
-        const token = jwt.token = jwt.sign({ userId: user._id },process.env.JWT_SECRET,{ expiresIn: "7d" });
+        const token = jwt.sign({ userId: user._id },process.env.JWT_SECRET,{ expiresIn: "7d" });
 
         res.status(200).json({ message: "Login successful", token, user });
     }catch(error){
+        console.error("Login error:", error);
         res.status(500).json({ message: "login form error" });
     }
 });
