@@ -20,7 +20,7 @@ function Login(){
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
             
-            navigate("/ownerdashboard");
+            navigate("/Dashboard");
         }catch(error){
             setError("Login failed! Please check your credentials.");
         }
@@ -30,7 +30,7 @@ function Login(){
         <>
         <div className="login-page">
             <div className="login-logo">
-                <img src="/assets/logo/logo.jpg" alt="Logo" />
+                <img src="/assets/logo.jpg" alt="Logo" />
             </div>
             <div className="login-container">
                 <h2>Login</h2>
