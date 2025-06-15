@@ -22,7 +22,7 @@ function Navbar(){
             </Link>
             <div className="nav-links">
                 <Link to="/seeitems">See Items</Link>
-                <Link to="../components/Additems">Load Items</Link>
+                <Link to="../components/Additem">Load Items</Link>
                 <Link to="/drivers">Drivers</Link>
                 <Link to="/items">Items</Link>
                 <Link to="/routes">Routes</Link>
