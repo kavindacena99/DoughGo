@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import AddVehicle from "./pages/AddVehicle";
-import AddItems from "./pages/AddItems";
+import AddItem from "./pages/AddItem";
 import SelectRoutes from "./pages/SelectRoutes";
 import LoadItems from "./pages/LoadItems";
 import AddDrivers from "./pages/AddDrivers";
@@ -19,7 +19,7 @@ function App(){
         <Route path="/register" element={<Register />} /> 
         <Route path="/ownerdashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/addvehicle" element={<PrivateRoute><AddVehicle /></PrivateRoute>} />
-        <Route path="/additems" element={<PrivateRoute><AddItems /></PrivateRoute>} />
+        <Route path="/additems" element={<PrivateRoute><AddItem /></PrivateRoute>} />
         <Route path="/selectroutes" element={<PrivateRoute><SelectRoutes /></PrivateRoute>} />
         <Route path="/loaditems" element={<PrivateRoute><LoadItems /></PrivateRoute>} />
         <Route path="/adddrivers" element={<PrivateRoute><AddDrivers /></PrivateRoute>} />

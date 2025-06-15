@@ -1,8 +1,8 @@
 import React from 'react';
 import API from '../services/api'; 
 import './AddItem.css';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function AddItem(){
     const [itemname, setItemName] = React.useState('');
