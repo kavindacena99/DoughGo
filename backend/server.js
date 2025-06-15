@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const itemRoutes = require('./routes/itemRoutes');
+const driverRoutes = require('./routes/driverRoutes');
 const { default: mongoose } = require('mongoose');
 
 dotenv.config(); // load environment variables from .env file
@@ -22,6 +23,7 @@ mongoose
 // Routes
 app.use("/api/auth",authRoutes);
 app.use("/api/item",itemRoutes);
+app.use("/api/driver",driverRoutes);
 
 // serve static files
 app.use('/uploads', express.static('uploads'));
