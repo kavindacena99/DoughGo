@@ -1,5 +1,8 @@
 import React from 'react';
 import API from '../services/api'; 
+import './AddItem.css';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 function AddItem(){
     const [itemname, setItemName] = React.useState('');
@@ -34,16 +37,20 @@ function AddItem(){
     };
 
     return(
-        <div>
-            <h1>Item adding part</h1>
-            <form onSubmit={itemAdd}>
-                <input type="text" placeholder="Enter item name" value={itemname} onChange={(e) => setItemName(e.target.value)} required /><br />
-                <input type="text" placeholder="Enter item weight" value={itemweight} onChange={(e) => setWeight(e.target.value)} required /><br />
-                <input type="number" placeholder="Enter item price" value={itemprice} onChange={(e) => setPrice(e.target.value)} required /><br />
-                <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} required /><br />
-                <button type="submit">Add Item</button>
-            </form>
-        </div>
+        <>
+            <Navbar />
+            <div className="additem-container">
+                <h1>Item adding part</h1>
+                <form className="additem-form" onSubmit={itemAdd}>
+                    <input type="text" placeholder="Enter item name" value={itemname} onChange={(e) => setItemName(e.target.value)} required />
+                    <input type="text" placeholder="Enter item weight" value={itemweight} onChange={(e) => setWeight(e.target.value)} required />
+                    <input type="number" placeholder="Enter item price" value={itemprice} onChange={(e) => setPrice(e.target.value)} required />
+                    <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} required />
+                    <button type="submit">Add Item</button>
+                </form>
+            </div>
+            <Footer />
+        </>
     );
 }
 
