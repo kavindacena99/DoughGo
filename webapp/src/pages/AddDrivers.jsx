@@ -26,7 +26,6 @@ function AddDrivers() {
 
   return (
     <div>
-      <Navbar />
       <div className="additem-container">
           <h1>Add a driver</h1>
           <form className="additem-form" onSubmit={addDriver}>
@@ -35,6 +34,31 @@ function AddDrivers() {
               <input type="text" placeholder="Enter an access code" value={accesscode} onChange={(e) => setAccessCode(e.target.value)} required />
               <button type="submit">Add Driver</button>
           </form>
+
+          <h2>Drivers List</h2>
+          <table className="items-table">
+            <thead>
+              <tr>
+                <th>Driver Name</th>
+                <th>Vehicle Number</th>
+                <th>Access Code</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exampleDrivers.map(driver => (
+                <tr key={driver.id}>
+                  <td>nir</td>
+                  <td>BHN3243</td>
+                  <td>dsfgdgfd123</td>
+                  <td>
+                    <button className="edit-btn" onClick={() => alert(`Edit driver ${driver.id}`)}>Edit</button>
+                    <button className="delete-btn" onClick={() => alert(`Delete driver ${driver.id}`)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
       </div>
       <Footer />
     </div>

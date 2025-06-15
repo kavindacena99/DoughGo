@@ -33,6 +33,7 @@ function Dashboard() {
         <h1>Bakery Owner Dashboard</h1>
         <div className="cards-container">
     
+         
           <div className="dashboard-card" onClick={handleAddItems}>
             <div className="card-image-placeholder"></div>
             Add Items
