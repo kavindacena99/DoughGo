@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
-//const itemRoutes = require('./routes/itemRoutes');
+const itemRoutes = require('./routes/itemRoutes');
 const { default: mongoose } = require('mongoose');
 
 dotenv.config(); // load environment variables from .env file
@@ -19,18 +19,12 @@ mongoose
 .then(() => console.log("Mongo DB connected"))
 .catch((err) => console.log("Mongo DB error", err));
 
-
-// Test route
-/*
-app.get("/", (req,res)=>{
-    res.send("API is running...");    
-});
-*/
-
 // Routes
 app.use("/api/auth",authRoutes);
-//app.use("/api/item",itemRoutes);
+app.use("/api/item",itemRoutes);
 
+// serve static files
+app.use('/uploads', express.static('uploads'));
 
 // Start the server
 const PORT = process.env.PORT || 5000;
