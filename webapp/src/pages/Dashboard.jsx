@@ -25,18 +25,37 @@ function Dashboard() {
     navigate("/loaditems");
   };
 
+  const handleAddDrivers = () => {
+    navigate("/adddrivers");
+  };
+
   return (
     <>
-      <Navbar />
       <div className="dashboard-container">
         <h1>Bakery Owner Dashboard</h1>
         <div className="cards-container">
-          <div className="dashboard-card" onClick={handleAddVehicle}>Add Vehicle</div>
-          <div className="dashboard-card" onClick={handleAddItems}>Add Items</div>
-          <div className="dashboard-card" onClick={handleSelectRoutes}>Select Routes</div>
-          <div className="dashboard-card" onClick={handleLoadItems}>Load Items</div>
+          <div className="dashboard-card" onClick={handleAddVehicle}>
+            <div className="card-image-placeholder"></div>
+            Add Vehicle
+          </div>
+          <div className="dashboard-card" onClick={handleAddItems}>
+            <div className="card-image-placeholder"></div>
+            Add Items
+          </div>
+          <div className="dashboard-card" onClick={handleSelectRoutes}>
+            <div className="card-image-placeholder"></div>
+            Select Routes
+          </div>
+          <div className="dashboard-card" onClick={handleLoadItems}>
+            <div className="card-image-placeholder"></div>
+            Load Items
+          </div>
+          <div className="dashboard-card" onClick={handleAddDrivers}>
+            <div className="card-image-placeholder"></div>
+            Add Drivers
+          </div>
         </div>
-        <LogoutButton />
+        
       </div>
       <Footer />
     </>
