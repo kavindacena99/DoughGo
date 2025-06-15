@@ -20,7 +20,7 @@ function Login(){
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
             
-            navigate("/Dashboard");
+            navigate("/ownerdashboard");
         }catch(error){
             setError("Login failed! Please check your credentials.");
         }
