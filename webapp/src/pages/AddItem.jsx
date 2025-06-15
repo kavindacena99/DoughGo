@@ -45,7 +45,6 @@ function AddItem(){
 
     return(
         <>
-            <Navbar />
             <div className="additem-container">
                 <h1>Item adding part</h1>
                 <form className="additem-form" onSubmit={itemAdd}>

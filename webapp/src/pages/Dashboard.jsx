@@ -1,5 +1,3 @@
-import React from "react";
-import Navbar from "../components/Navbar";
 import LogoutButton from "../components/LogoutButton";
 import Footer from "../components/Footer";
 import "./Dashboard.css";
@@ -31,11 +29,10 @@ function Dashboard() {
 
   return (
     <>
-      <Navbar />
       <div className="dashboard-container">
         <h1>Bakery Owner Dashboard</h1>
         <div className="cards-container">
-         
+    
           <div className="dashboard-card" onClick={handleAddItems}>
             <div className="card-image-placeholder"></div>
             Add Items
