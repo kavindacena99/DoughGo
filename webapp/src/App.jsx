@@ -4,7 +4,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import AddVehicle from "./pages/AddVehicle";
 import AddItem from "./pages/AddItem";
 import SelectRoutes from "./pages/SelectRoutes";
 import LoadItems from "./pages/LoadItems";
@@ -18,7 +17,6 @@ function App(){
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} /> 
         <Route path="/ownerdashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/addvehicle" element={<PrivateRoute><AddVehicle /></PrivateRoute>} />
         <Route path="/additems" element={<PrivateRoute><AddItem /></PrivateRoute>} />
         <Route path="/selectroutes" element={<PrivateRoute><SelectRoutes /></PrivateRoute>} />
         <Route path="/loaditems" element={<PrivateRoute><LoadItems /></PrivateRoute>} />
