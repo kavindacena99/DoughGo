@@ -10,6 +10,13 @@ function AddItem(){
     const [itemprice, setPrice] = React.useState(0);
     const [image, setImage] = React.useState(null);
 
+    // Example static items data
+    const exampleItems = [
+        { id: 1, itemname: 'Bread', itemweight: '500g', itemprice: 2.5 },
+        { id: 2, itemname: 'Croissant', itemweight: '100g', itemprice: 1.2 },
+        { id: 3, itemname: 'Bagel', itemweight: '300g', itemprice: 3.0 },
+    ];
+
     const itemAdd = async (e) => {
         e.preventDefault();
         try{
@@ -48,6 +55,31 @@ function AddItem(){
                     <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} required />
                     <button type="submit">Add Item</button>
                 </form>
+
+                <h2>Items List</h2>
+                <table className="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Weight</th>
+                            <th>Price ($)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {exampleItems.map(item => (
+                            <tr key={item.id}>
+                                <td>{item.itemname}</td>
+                                <td>{item.itemweight}</td>
+                                <td>{item.itemprice.toFixed(2)}</td>
+                                <td>
+                                    <button className="edit-btn" onClick={() => alert(`Edit item ${item.id}`)}>Edit</button>
+                                    <button className="delete-btn" onClick={() => alert(`Delete item ${item.id}`)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
             <Footer />
         </>

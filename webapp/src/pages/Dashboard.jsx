@@ -31,13 +31,11 @@ function Dashboard() {
 
   return (
     <>
+      <Navbar />
       <div className="dashboard-container">
         <h1>Bakery Owner Dashboard</h1>
         <div className="cards-container">
-          <div className="dashboard-card" onClick={handleAddVehicle}>
-            <div className="card-image-placeholder"></div>
-            Add Vehicle
-          </div>
+         
           <div className="dashboard-card" onClick={handleAddItems}>
             <div className="card-image-placeholder"></div>
             Add Items

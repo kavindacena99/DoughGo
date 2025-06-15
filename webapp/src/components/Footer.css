@@ -1,11 +1,26 @@
 .footer {
-  background-color: #FFBF00;
-  padding: 1rem;
+  background-color: #222;
+  color: white;
+  padding: 20px;
   text-align: center;
-  font-family: Arial, sans-serif;
-  color: #333333;
-  position: fixed;
+  position: relative;
   bottom: 0;
   width: 100%;
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+}
+
+.social-icons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-icons a svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+}
+
+.social-icons a:hover svg {
+  transform: scale(1.2);
 }
