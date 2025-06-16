@@ -1,5 +1,4 @@
-import React from "react";
-import Navbar from "../components/Navbar";
+import React, { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import API from "../services/api";
 
@@ -24,6 +23,22 @@ function AddDrivers() {
     }
   }
 
+  const [ drivers, setDrivers ] = useState([]);
+
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await API.get("/driver/getdrivers", { headers: { Authorization: `Bearer ${token}` } });
+        setDrivers(response.data);
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
+    }
+
+    fetchDrivers();
+  },[]);
+
   return (
     <div>
       <div className="additem-container">
@@ -46,11 +61,11 @@ function AddDrivers() {
               </tr>
             </thead>
             <tbody>
-              {exampleDrivers.map(driver => (
-                <tr key={driver.id}>
-                  <td>nir</td>
-                  <td>BHN3243</td>
-                  <td>dsfgdgfd123</td>
+              {drivers.map(driver => (
+                <tr key={driver._id}>
+                  <td>{driver.drivername}</td>
+                  <td>{driver.vehiclenumber}</td>
+                  <td>{driver.accesscode}</td>
                   <td>
                     <button className="edit-btn" onClick={() => alert(`Edit driver ${driver.id}`)}>Edit</button>
                     <button className="delete-btn" onClick={() => alert(`Delete driver ${driver.id}`)}>Delete</button>
