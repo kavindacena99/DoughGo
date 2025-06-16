@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import './Register.css';
+import logo from '../Img/LOGO.jpg';
 
 function Register(){
     const [ firstname, setFirstname] = useState("");
@@ -34,7 +35,7 @@ function Register(){
         <>
         <div className="register-page">
             <div className="register-logo">
-                <img src="/assets/logo/logo.jpg" alt="Logo" />
+                <img src={logo} alt="Logo" />
             </div>
             <div className="register-container">
                 <h2>Register</h2>

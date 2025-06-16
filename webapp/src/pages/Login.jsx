@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { useState } from 'react';
 import './Login.css';
+import logo from '../Img/LOGO.jpg';
 
 function Login(){
     const [ email, setEmail] = useState("");
@@ -30,7 +31,7 @@ function Login(){
         <>
         <div className="login-page">
             <div className="login-logo">
-                <img src="/assets/logo.jpg" alt="Logo" />
+                <img src={logo} alt="Logo" />
             </div>
             <div className="login-container">
                 <h2>Login</h2>

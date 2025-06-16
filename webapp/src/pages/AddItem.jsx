@@ -12,9 +12,9 @@ function AddItem(){
 
     // Example static items data
     const exampleItems = [
-        { id: 1, itemname: 'Bread', itemweight: '500g', itemprice: 2.5 },
-        { id: 2, itemname: 'Croissant', itemweight: '100g', itemprice: 1.2 },
-        { id: 3, itemname: 'Bagel', itemweight: '300g', itemprice: 3.0 },
+        { id: 1, itemname: 'Bread', itemweight: '500g', itemprice: 150.00 },
+        { id: 2, itemname: 'Bun', itemweight: '100g', itemprice: 60.00 },
+        { id: 3, itemname: 'cake', itemweight: '500g', itemprice: 500.00 },
     ];
 
     const itemAdd = async (e) => {
@@ -61,7 +61,7 @@ function AddItem(){
                         <tr>
                             <th>Item Name</th>
                             <th>Weight</th>
-                            <th>Price ($)</th>
+                            <th>Price </th>
                             <th>Actions</th>
                         </tr>
                     </thead>

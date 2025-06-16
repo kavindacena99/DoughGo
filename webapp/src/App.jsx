@@ -8,6 +8,8 @@ import AddItem from "./pages/AddItem";
 import SelectRoutes from "./pages/SelectRoutes";
 import LoadItems from "./pages/LoadItems";
 import AddDrivers from "./pages/AddDrivers";
+import SpecialOrders from "./pages/SpecialOrders";
+import ComplainsMessages from "./pages/ComplainsMessages";
 
 function App(){
   return(
@@ -21,6 +23,8 @@ function App(){
         <Route path="/selectroutes" element={<PrivateRoute><SelectRoutes /></PrivateRoute>} />
         <Route path="/loaditems" element={<PrivateRoute><LoadItems /></PrivateRoute>} />
         <Route path="/adddrivers" element={<PrivateRoute><AddDrivers /></PrivateRoute>} />
+        <Route path="/specialorders" element={<PrivateRoute><SpecialOrders /></PrivateRoute>} />
+        <Route path="/complainsmessages" element={<PrivateRoute><ComplainsMessages /></PrivateRoute>} />
       </Routes>
     </Router>
   );

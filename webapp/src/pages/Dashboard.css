@@ -42,3 +42,8 @@
 .dashboard-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
+
+.card-emoji {
+  font-size: 48px;
+  margin-bottom: 15px;
+}

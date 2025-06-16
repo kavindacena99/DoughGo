@@ -29,26 +29,35 @@ function Dashboard() {
 
   return (
     <>
+    
       <div className="dashboard-container">
         <h1>Bakery Owner Dashboard</h1>
         <div className="cards-container">
     
          
           <div className="dashboard-card" onClick={handleAddItems}>
-            <div className="card-image-placeholder"></div>
+            <span className="card-emoji" role="img" aria-label="Add Items">📦</span>
             Add Items
           </div>
           <div className="dashboard-card" onClick={handleSelectRoutes}>
-            <div className="card-image-placeholder"></div>
+            <span className="card-emoji" role="img" aria-label="Select Routes">🗺️</span>
             Select Routes
           </div>
           <div className="dashboard-card" onClick={handleLoadItems}>
-            <div className="card-image-placeholder"></div>
+            <span className="card-emoji" role="img" aria-label="Load Items">🚚</span>
             Load Items
           </div>
           <div className="dashboard-card" onClick={handleAddDrivers}>
-            <div className="card-image-placeholder"></div>
+            <span className="card-emoji" role="img" aria-label="Add Drivers">👨‍✈️</span>
             Add Drivers
+          </div>
+          <div className="dashboard-card" onClick={() => navigate("/specialorders")}>
+            <span className="card-emoji" role="img" aria-label="Special Orders">🛒</span>
+            Special Orders
+          </div>
+          <div className="dashboard-card" onClick={() => navigate("/complainsmessages")}>
+            <span className="card-emoji" role="img" aria-label="Complains and Messages">💬</span>
+            Complains & Messages
           </div>
         </div>
         
