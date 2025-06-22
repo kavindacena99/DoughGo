@@ -38,6 +38,4 @@ DoughGo is a full-stack bakery delivery management system developed for coordina
 
 ---
 
-## 📂 Project Structure
-
 
