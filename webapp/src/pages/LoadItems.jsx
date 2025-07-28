@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
-import GetLoad from "../components/GetLoad";
+import "./LoadItems.css";
 
 function LoadItems() {
   const [drivers, setDrivers] = useState([]);
   const [items, setItems] = useState([]);
-  const [selectedItems, setSelectedItems] = useState({}); 
+  const [selectedDriver, setSelectedDriver] = useState('');
+  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedCount, setSelectedCount] = useState('');
+  const [customCount, setCustomCount] = useState('');
+  const [loadedItems, setLoadedItems] = useState([]);
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -15,6 +19,9 @@ function LoadItems() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDrivers(response.data);
+        if (response.data.length > 0) {
+          setSelectedDriver(response.data[0]._id);
+        }
       } catch (error) {
         console.error("Error fetching drivers:", error);
       }
@@ -30,6 +37,9 @@ function LoadItems() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setItems(response.data);
+        if (response.data.length > 0) {
+          setSelectedItem(response.data[0]._id);
+        }
       } catch (error) {
         console.error("Error fetching items:", error);
       }
@@ -37,26 +47,35 @@ function LoadItems() {
     fetchItems();
   }, []);
 
-  const handleItemQuantityChange = (driverId, itemId, quantity) => {
-    setSelectedItems((prev) => ({
-      ...prev,
-      [driverId]: {
-        ...prev[driverId],
-        [itemId]: Number(quantity),
-      },
-    }));
-  };
+  useEffect(() => {
+    const fetchLoadedItems = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await API.get("/item/getloads", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setLoadedItems(response.data);
+      } catch (error) {
+        console.error("Error fetching loaded items:", error);
+      }
+    };
+    fetchLoadedItems();
+  }, []);
 
-  const handleSubmit = async (e, driverId) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const itemsForDriver = selectedItems[driverId] || {};
-    const itemsToSend = Object.entries(itemsForDriver)
-      .filter(([_, qty]) => qty > 0)
-      .map(([itemId, quantity]) => ({ itemId, quantity }));
-
-    if (itemsToSend.length === 0) {
-      alert("Please select at least one item.");
+    const quantity = selectedCount === 'custom' ? Number(customCount) : Number(selectedCount);
+    if (!selectedDriver) {
+      alert("Please select a driver.");
+      return;
+    }
+    if (!selectedItem) {
+      alert("Please select an item.");
+      return;
+    }
+    if (!quantity || quantity <= 0) {
+      alert("Please enter a valid quantity.");
       return;
     }
 
@@ -65,8 +84,8 @@ function LoadItems() {
       await API.post(
         "/item/loaditems",
         {
-          driverId,
-          items: itemsToSend,
+          driverId: selectedDriver,
+          items: [{ itemId: selectedItem, quantity }],
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,12 +93,13 @@ function LoadItems() {
       );
 
       alert(`Items loaded to vehicle successfully!`);
-
-      setSelectedItems((prev) => ({
-        ...prev,
-        [driverId]: {},
-      }));
-      window.location.reload();
+      setCustomCount('');
+      setSelectedCount('');
+      // Refresh loaded items list
+      const response = await API.get("/item/getloads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLoadedItems(response.data);
     } catch (err) {
       console.error("Error loading items:", err);
       alert("Failed to load items to vehicle");
@@ -87,54 +107,81 @@ function LoadItems() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-6">Load Items to Vehicles</h2>
+    <div className="loaditems-container">
+      <h1>Load Items to Vehicles</h1>
+      <form className="loaditems-form" onSubmit={handleSubmit}>
+        <label>
+          Select Driver:
+          <select value={selectedDriver} onChange={(e) => setSelectedDriver(e.target.value)} required>
+            {drivers.map((driver) => (
+              <option key={driver._id} value={driver._id}>
+                {driver.drivername} ({driver.vehiclenumber})
+              </option>
+            ))}
+          </select>
+        </label>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {drivers.map((driver) => (
-          <div
-            key={driver._id}
-            className="border rounded-lg p-4 shadow-md bg-white"
-          >
-            <h3 className="text-lg font-semibold mb-4">
-              {driver.drivername} ({driver.vehiclenumber})
-            </h3>
+        <label>
+          Select Item:
+          <select value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} required>
+            {items.map((item) => (
+              <option key={item._id} value={item._id}>
+                {item.itemname}
+              </option>
+            ))}
+          </select>
+        </label>
 
-            <form onSubmit={(e) => handleSubmit(e, driver._id)}>
-              {items.map((item) => (
-                <div key={item._id} className="flex items-center mb-2">
-                  <span className="mr-2 w-40">{item.itemname}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={
-                      selectedItems[driver._id]?.[item._id] ?? ""
-                    }
-                    onChange={(e) =>
-                      handleItemQuantityChange(
-                        driver._id,
-                        item._id,
-                        e.target.value
-                      )
-                    }
-                    className="w-20 border px-2 py-1"
-                    placeholder="Qty"
-                  />
-                </div>
-              ))}
+        <label>
+          Select Quantity:
+          <select value={selectedCount} onChange={(e) => setSelectedCount(e.target.value)} required>
+            <option value="">--Select--</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
 
-              <button
-                type="submit"
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Submit Load
-              </button>
-            </form>
-          </div>
-        ))}
+        {selectedCount === 'custom' && (
+          <label>
+            Enter Custom Quantity:
+            <input
+              type="number"
+              min="1"
+              value={customCount}
+              onChange={(e) => setCustomCount(e.target.value)}
+              required
+            />
+          </label>
+        )}
+
+        <button type="submit">Submit Load</button>
+      </form>
+
+      <h2>Loaded Items</h2>
+      <div className="loaded-items-cards">
+        {loadedItems.length === 0 ? (
+          <p>No loaded items found.</p>
+        ) : (
+          loadedItems.map((load) => (
+            <div key={load._id} className="loaded-item-card">
+              <h3>
+                Vehicle: {load.driverId?.vehiclenumber} - {load.driverId?.drivername}
+              </h3>
+              <ul>
+                {load.items.map((item) => (
+                  <li key={item.itemId._id}>
+                    {item.itemId.itemname} - Quantity: {item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
       </div>
-
-      <GetLoad />
     </div>
   );
 }

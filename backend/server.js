@@ -20,10 +20,13 @@ mongoose
 .then(() => console.log("Mongo DB connected"))
 .catch((err) => console.log("Mongo DB error", err));
 
+const specialOrderRoutes = require('./routes/specialOrderRoutes');
+
 // Routes
 app.use("/api/auth",authRoutes);
 app.use("/api/item",itemRoutes);
 app.use("/api/driver",driverRoutes);
+app.use("/api/specialorders", specialOrderRoutes);
 
 // serve static files
 app.use('/uploads', express.static('uploads'));

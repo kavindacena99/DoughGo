@@ -1,104 +1,83 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SpecialOrders.css';
 import Footer from '../components/Footer';
-
-const sampleOrders = [
-  { id: 1, customer: 'John Doe', item: 'Custom Cake', details: 'Chocolate flavor, 2kg' },
-  { id: 2, customer: 'Jane Smith', item: 'Birthday Cookies', details: 'Vanilla, 24 pcs' },
-  { id: 3, customer: 'Alice Johnson', item: 'Wedding Cake', details: '3 tiers, red velvet' },
-];
+import API from '../services/api';
 
 function SpecialOrders() {
-  const [orders, setOrders] = useState(sampleOrders);
-  const [confirmedOrders, setConfirmedOrders] = useState([]);
-  const [rejectedOrders, setRejectedOrders] = useState([]);
+  const [orders, setOrders] = useState([]);
 
-  const handleConfirm = (id) => {
-    const order = orders.find(o => o.id === id);
-    if (order) {
-      setConfirmedOrders([...confirmedOrders, order]);
-      setOrders(orders.filter(order => order.id !== id));
-      alert(`Order ${id} confirmed.`);
+  useEffect(() => {
+    const fetchSpecialOrders = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await API.get('/specialorders', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOrders(response.data);
+      } catch (error) {
+        console.error('Error fetching special orders:', error);
+      }
+    };
+    fetchSpecialOrders();
+  }, []);
+
+  const handleAccept = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await API.post(`/specialorders/accept/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(orders.filter(order => order._id !== id));
+      alert(`Order ${id} accepted.`);
+    } catch (error) {
+      console.error('Error accepting order:', error);
+      alert('Failed to accept order.');
     }
   };
 
-  const handleReject = (id) => {
-    const order = orders.find(o => o.id === id);
-    if (order) {
-      setRejectedOrders([...rejectedOrders, order]);
-      setOrders(orders.filter(order => order.id !== id));
-      alert(`Order ${id} rejected.`);
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await API.delete(`/specialorders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(orders.filter(order => order._id !== id));
+      alert(`Order ${id} deleted.`);
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('Failed to delete order.');
     }
   };
 
   return (
     <>
       <div className="special-orders-container" style={{ textAlign: 'center' }}>
-        <h1>Special Orders</h1>
-        <div style={{ marginBottom: '20px' }}>
+        <h1 style={{ position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, backgroundColor: '#f8f8f8', padding: '10px 20px', borderRadius: '8px' }}>Special Orders</h1>
+        <div style={{ marginTop: '140px' }}>
           {orders.length === 0 ? (
-            <p> No special orders at the moment.</p>
+            <p>No special orders at the moment.</p>
           ) : (
-            <p>Special Orders</p>
-          )}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
-          {orders.map(order => (
-            <div key={order.id} className="order-card">
-              <h3>{order.customer}</h3>
-              <p><strong>Item:</strong> {order.item}</p>
-              <p><strong>Details:</strong> {order.details}</p>
-              <div className="order-buttons">
-                <button className="confirm-btn" onClick={() => handleConfirm(order.id)}>Confirm</button>
-                <button className="reject-btn" onClick={() => handleReject(order.id)}>Reject</button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: '40px' }}>
-          <h2>Confirmed Orders</h2>
-          {confirmedOrders.length === 0 ? (
-            <p>No confirmed orders.</p>
-          ) : (
-            <table className="orders-table">
+            <table className="orders-table" style={{ margin: '0 auto', maxWidth: '800px' }}>
               <thead>
                 <tr>
-                  <th>Customer</th>
+                  <th>Order ID</th>
                   <th>Item</th>
-                  <th>Details</th>
+                  <th>Quantity</th>
+                  <th>Date Created</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {confirmedOrders.map(order => (
-                  <tr key={order.id}>
-                    <td>{order.customer}</td>
-                    <td>{order.item}</td>
-                    <td>{order.details}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-        <div style={{ marginTop: '40px' }}>
-          <h2>Rejected Orders</h2>
-          {rejectedOrders.length === 0 ? (
-            <p>No rejected orders.</p>
-          ) : (
-            <table className="orders-table">
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Item</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rejectedOrders.map(order => (
-                  <tr key={order.id}>
-                    <td>{order.customer}</td>
-                    <td>{order.item}</td>
-                    <td>{order.details}</td>
+                {orders.map(order => (
+                  <tr key={order._id}>
+                    <td>{order.orderId}</td>
+                    <td>{order.itemId?.itemname || 'N/A'}</td>
+                    <td>{order.quantity}</td>
+                    <td>{new Date(order.createdAt).toLocaleString()}</td>
+                    <td>
+                      <button className="confirm-btn" onClick={() => handleAccept(order._id)}>Accept</button>
+                      <button className="reject-btn" onClick={() => handleDelete(order._id)}>Delete</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
