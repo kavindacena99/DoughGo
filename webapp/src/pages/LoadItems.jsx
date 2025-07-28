@@ -95,9 +95,10 @@ function LoadItems() {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await API.get("/api/order/orders", {
+        const response = await API.get("/order/orders", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("Fetched orders:", response.data);
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -109,7 +110,7 @@ function LoadItems() {
   const handleConfirm = async (orderId) => {
     try {
       const token = localStorage.getItem("token");
-      await API.post(`/api/order/orders/${orderId}/confirm`, {}, {
+      await API.post(`/order/orders/${orderId}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(prevOrders =>
@@ -126,7 +127,7 @@ function LoadItems() {
   const handleReject = async (orderId) => {
     try {
       const token = localStorage.getItem("token");
-      await API.post(`/api/order/orders/${orderId}/reject`, {}, {
+      await API.post(`/order/orders/${orderId}/reject`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(prevOrders =>
@@ -208,15 +209,24 @@ function LoadItems() {
   const handleReset = async () => {
     try {
       const token = localStorage.getItem("token");
+      // Delete confirmed orders
+      await API.delete("/order/orders/deleteByStatus?status=confirmed", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Delete rejected orders
+      await API.delete("/order/orders/deleteByStatus?status=rejected", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Delete loaded items
       const response = await API.delete("/item/resetloads", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert(response.data.message);
+      alert("Confirmed and rejected orders deleted. " + response.data.message);
       window.location.reload();
     } catch (error) {
-      console.error("Error deleting loads:", error);
-      alert("Failed to delete loads");
+      console.error("Error deleting loads or orders:", error);
+      alert("Failed to delete loads or orders");
     }
   }
 
@@ -304,27 +314,33 @@ function LoadItems() {
                   <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <ul style={{ margin: 0, paddingLeft: '20px' }}>
                       {order.items.map((item, index) => (
-                        <li key={index}>{item.itemname} - Quantity: {item.quantity}</li>
+                        <li key={index}>{item.id?.itemname || 'N/A'} - Quantity: {item.quantity}</li>
                       ))}
                     </ul>
                   </td>
                   <td style={{ border: '1px solid #ddd', padding: '8px' }}>{order.total}</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px', textTransform: 'capitalize' }}>{order.status || 'pending'}</td>
                   <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                    <button
-                      onClick={() => handleConfirm(order._id)}
-                      disabled={order.status === 'confirmed'}
-                      style={{ marginRight: '8px', padding: '5px 10px', cursor: order.status === 'confirmed' ? 'not-allowed' : 'pointer' }}
-                    >
-                      Confirm
-                    </button>
-                    <button
-                      onClick={() => handleReject(order._id)}
-                      disabled={order.status === 'rejected'}
-                      style={{ padding: '5px 10px', cursor: order.status === 'rejected' ? 'not-allowed' : 'pointer' }}
-                    >
-                      Reject
-                    </button>
+                    {order.status === 'confirmed' ? (
+                      <span style={{ color: 'green', fontWeight: 'bold' }}>Confirmed</span>
+                    ) : order.status === 'rejected' ? (
+                      <span style={{ color: 'red', fontWeight: 'bold' }}>Rejected</span>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleConfirm(order._id)}
+                          style={{ marginRight: '8px', padding: '5px 10px', cursor: 'pointer' }}
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => handleReject(order._id)}
+                          style={{ padding: '5px 10px', cursor: 'pointer' }}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -38,6 +38,7 @@ router.get("/orders", async (req, res) => {
     const orders = await Order.find()
       .populate("customerId", "name email") // assuming customer has name and email fields
       .populate("sellerId", "name") // assuming seller has name field
+      .populate("items.id", "itemname") // populate item names in items array
       .exec();
     res.json(orders);
   } catch (err) {
@@ -77,6 +78,20 @@ router.post("/orders/:id/reject", async (req, res) => {
   } catch (err) {
     console.error("Error rejecting order:", err);
     res.status(500).json({ error: "Failed to reject order" });
+  }
+});
+
+router.delete("/orders/deleteByStatus", async (req, res) => {
+  try {
+    const { status } = req.query;
+    if (!status) {
+      return res.status(400).json({ error: "Status query parameter is required" });
+    }
+    const result = await Order.deleteMany({ status: status });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error("Error deleting orders by status:", err);
+    res.status(500).json({ error: "Failed to delete orders" });
   }
 });
 
