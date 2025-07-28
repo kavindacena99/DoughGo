@@ -18,6 +18,7 @@ function AddDrivers() {
       setDriverName('');
       setVehicleNumber('');
       setAccessCode('');
+      window.location.reload();
     }catch(error){
       alert("Driver addition failed!");
     }
@@ -67,7 +68,6 @@ function AddDrivers() {
                   <td>{driver.vehiclenumber}</td>
                   <td>{driver.accesscode}</td>
                   <td>
-                    <button className="edit-btn" onClick={() => alert(`Edit driver ${driver.id}`)}>Edit</button>
                     <button className="delete-btn" onClick={() => alert(`Delete driver ${driver.id}`)}>Delete</button>
                   </td>
                 </tr>
