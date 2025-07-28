@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import API from '../services/api'; 
 import './AddItem.css';
 import Navbar from '../components/Navbar';
@@ -9,13 +10,6 @@ function AddItem(){
     const [itemweight, setWeight] = React.useState('');
     const [itemprice, setPrice] = React.useState(0);
     const [image, setImage] = React.useState(null);
-
-    // Example static items data
-    const exampleItems = [
-        { id: 1, itemname: 'Bread', itemweight: '500g', itemprice: 150.00 },
-        { id: 2, itemname: 'Bun', itemweight: '100g', itemprice: 60.00 },
-        { id: 3, itemname: 'cake', itemweight: '500g', itemprice: 500.00 },
-    ];
 
     const itemAdd = async (e) => {
         e.preventDefault();
@@ -38,11 +32,29 @@ function AddItem(){
             setItemName('');
             setWeight('');
             setPrice(0);
+            window.location.reload();
         }catch(error){
             alert("Item addition failed!");
         }
     };
 
+
+    const [ items, setItems ] = useState([]);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await API.get("/item/getitems", { headers: { Authorization: `Bearer ${token}` } });
+            setItems(response.data);
+        } catch (error) {
+            console.error("Error fetching items:", error);
+        }
+        }
+
+        fetchItems();
+    },[]);
+    
     return(
         <>
             <div className="additem-container">
@@ -66,8 +78,8 @@ function AddItem(){
                         </tr>
                     </thead>
                     <tbody>
-                        {exampleItems.map(item => (
-                            <tr key={item.id}>
+                        {items.map(item => (
+                            <tr key={item._id}>
                                 <td>{item.itemname}</td>
                                 <td>{item.itemweight}</td>
                                 <td>{item.itemprice.toFixed(2)}</td>
