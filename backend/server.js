@@ -22,11 +22,14 @@ mongoose
 
 const specialOrderRoutes = require('./routes/specialOrderRoutes');
 
+const messageRoutes = require('./routes/messageRoutes');
+
 // Routes
 app.use("/api/auth",authRoutes);
 app.use("/api/item",itemRoutes);
 app.use("/api/driver",driverRoutes);
 app.use("/api/specialorders", specialOrderRoutes);
+app.use("/api/messages", messageRoutes);
 
 // serve static files
 app.use('/uploads', express.static('uploads'));

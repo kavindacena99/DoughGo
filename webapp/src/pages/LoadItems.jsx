@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import "./LoadItems.css";
+import Footer from "../components/Footer";
+
 
 function LoadItems() {
   const [drivers, setDrivers] = useState([]);

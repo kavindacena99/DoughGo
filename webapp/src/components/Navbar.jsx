@@ -17,7 +17,7 @@ function Navbar(){
 
     return(
         <nav className="navbar">
-            <Link to="/Dashboard" className="brand">
+            <Link to="/ownerdashboard" className="brand">
                 <img src={logo} alt="Logo" className="logo" />
                 DoughGo
             </Link>
