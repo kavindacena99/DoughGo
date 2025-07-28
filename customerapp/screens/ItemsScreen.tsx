@@ -1,21 +1,53 @@
 import React from 'react';
-import { View, Text, FlatList, Button, StyleSheet, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, FlatList, Button, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import API from '../services/api';
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 type Item = {
   id: string;
   itemname: string;
-  price:number;
+  itemprice:number;
   addtocart:boolean;
+  Checkout: { cartItems: Item[] };
 };
 
-const initialItems: Item[] = [
-  { id: '1', itemname:'Bread', price:200.00, addtocart: false },
-  { id: '2', itemname:'Bun', price:80.00, addtocart: false },
-  { id: '3', itemname:'Cake' , price:500.00, addtocart: false }
-];
-
 const ItemsScreen: React.FC = () => {
-  const [itemList, setItemList] = React.useState<Item[]>(initialItems);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  type RootStackParamList = {
+    Checkout: { cartItems: Item[] };
+  };
+  const [itemList, setItemList] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+  const fetchItems = async () => {
+    try {
+      const response = await API.get('/item/showitems');
+
+      const rawItems = Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
+
+      const itemsWithCartFlag: Item[] = rawItems.map((item: any) => ({
+        id: item._id || item.id,  
+        itemname: item.itemname,
+        itemprice: item.itemprice,
+        addtocart: false,
+      }));
+
+        setItemList(itemsWithCartFlag);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
 
   const markSold = (id: string) => {
     const updated = itemList.map(item =>
@@ -27,11 +59,10 @@ const ItemsScreen: React.FC = () => {
   const renderItem = ({ item }: { item: Item }) => (
     <View style={styles.card}>
       <Text style={styles.itemName}>{item.itemname}</Text>
-        <Text style={styles.status}>
-          {item.addtocart ? '✅ Added to cart':''}
-        </Text>
-
-      <Text style={styles.status}>{"Price: Rs " + item.price + ".00"}</Text>
+      <Text style={styles.status}>
+        {item.addtocart ? '✅ Added to cart' : ''}
+      </Text>
+      <Text style={styles.status}>Price: Rs {item.itemprice}.00</Text>
       {!item.addtocart && (
         <Pressable style={styles.button} onPress={() => markSold(item.id)}>
           <Text style={styles.buttonText}>Add to cart</Text>
@@ -40,10 +71,29 @@ const ItemsScreen: React.FC = () => {
     </View>
   );
 
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="orange" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={{ marginTop:20, marginBottom:15, marginLeft:65, color:"orange", fontSize:60, fontWeight:900 }}>DoughGo</Text>
       <Text style={styles.title}>🥖 Find your Taste 🥖</Text>
+      <Pressable
+        style={[styles.button, { marginTop: 20 }]}
+        onPress={() =>
+          navigation.navigate("Checkout", {
+            cartItems: itemList.filter((item) => item.addtocart),
+          })
+        }
+      >
+        <Text style={styles.buttonText}>Go to Checkout</Text>
+      </Pressable>
+
       <FlatList
         data={itemList}
         renderItem={renderItem}

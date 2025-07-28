@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import ItemsScreen from "./screens/ItemsScreen";
+import CheckoutScreen from "./screens/CheckoutScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -43,6 +44,8 @@ export default function App() {
           component={ItemsScreen} 
           options={{ headerShown: false, title: 'Item' }}
         />
+
+        <Stack.Screen name="Checkout" component={CheckoutScreen} />
 
 
       </Stack.Navigator>
