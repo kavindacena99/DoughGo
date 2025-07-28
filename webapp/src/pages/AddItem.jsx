@@ -57,7 +57,7 @@ function AddItem(){
     return(
         <>
             <div className="additem-container">
-                <h1>Item adding part</h1>
+                <h1>Add Items</h1>
                 <form className="additem-form" onSubmit={itemAdd}>
                     <input type="text" placeholder="Enter item name" value={itemname} onChange={(e) => setItemName(e.target.value)} required />
                     <input type="text" placeholder="Enter item weight" value={itemweight} onChange={(e) => setWeight(e.target.value)} required />
