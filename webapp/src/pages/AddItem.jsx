@@ -2,7 +2,6 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import API from '../services/api'; 
 import './AddItem.css';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 function AddItem(){
@@ -43,13 +42,13 @@ function AddItem(){
 
     useEffect(() => {
         const fetchItems = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await API.get("/item/getitems", { headers: { Authorization: `Bearer ${token}` } });
-            setItems(response.data);
-        } catch (error) {
-            console.error("Error fetching items:", error);
-        }
+            try {
+                const token = localStorage.getItem("token");
+                const response = await API.get("/item/getitems", { headers: { Authorization: `Bearer ${token}` } });
+                setItems(response.data);
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            }
         }
 
         fetchItems();

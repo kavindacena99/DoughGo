@@ -37,7 +37,7 @@ router.get("/getitems", protect, async(req,res) => {
         const items = await Item.find({ seller: sellerId });
 
         if(!items || items.length === 0){
-            return res.status(404).json({ message: 'No items found for this seller' });
+            //return res.status(404).json({ message: 'No items found for this seller' });
         }
 
         res.status(200).json(items);
@@ -113,6 +113,17 @@ router.delete("/resetloads",protect, async (req,res) => {
         res.status(200).json({ message: 'All loads reset successfully', deletedCount: deletedLoads.deletedCount });
     }catch(err){
         res.status(500).json({ message: 'Error resetting loads', error: err.message });
+    }
+});
+
+// customer
+
+router.get("/showitems",async (req,res) => {
+    try{
+        const items = await Item.find();
+        res.json(items);
+    }catch(err){
+        res.status(500).json({ message: 'Error fetching items', error: err.message });
     }
 });
 

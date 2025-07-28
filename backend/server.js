@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const itemRoutes = require('./routes/itemRoutes');
 const driverRoutes = require('./routes/driverRoutes');
+const customerRoutes = require('./routes/customerRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const { default: mongoose } = require('mongoose');
 
 dotenv.config(); // load environment variables from .env file
@@ -30,6 +32,8 @@ app.use("/api/item",itemRoutes);
 app.use("/api/driver",driverRoutes);
 app.use("/api/specialorders", specialOrderRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/customer",customerRoutes);
+app.use("/api/order",orderRoutes);
 
 // serve static files
 app.use('/uploads', express.static('uploads'));
