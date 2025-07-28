@@ -3,7 +3,6 @@ import API from "../services/api";
 import "./LoadItems.css";
 import Footer from "../components/Footer";
 
-
 function LoadItems() {
   const [drivers, setDrivers] = useState([]);
   const [items, setItems] = useState([]);
@@ -12,6 +11,7 @@ function LoadItems() {
   const [selectedCount, setSelectedCount] = useState('');
   const [customCount, setCustomCount] = useState('');
   const [loadedItems, setLoadedItems] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -56,13 +56,89 @@ function LoadItems() {
         const response = await API.get("/item/getloads", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setLoadedItems(response.data);
+        // Merge loads by driverId and aggregate quantities for same items
+        const mergedLoads = {};
+        response.data.forEach(load => {
+          const driverId = load.driverId._id;
+          if (!mergedLoads[driverId]) {
+            mergedLoads[driverId] = {
+              ...load,
+              items: [...load.items]
+            };
+          } else {
+            load.items.forEach(newItem => {
+              const existingItemIndex = mergedLoads[driverId].items.findIndex(
+                item => item.itemId._id === newItem.itemId._id
+              );
+              if (existingItemIndex === -1) {
+                mergedLoads[driverId].items.push(newItem);
+              } else {
+                mergedLoads[driverId].items[existingItemIndex].quantity += newItem.quantity;
+              }
+            });
+          }
+        });
+        setLoadedItems(Object.values(mergedLoads));
       } catch (error) {
-        console.error("Error fetching loaded items:", error);
+        if (error.response && error.response.status === 404) {
+          // No loads found, set empty array
+          setLoadedItems([]);
+        } else {
+          console.error("Error fetching loaded items:", error);
+        }
       }
     };
     fetchLoadedItems();
   }, []);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await API.get("/api/order/orders", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOrders(response.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const handleConfirm = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await API.post(`/api/order/orders/${orderId}/confirm`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId ? { ...order, status: "confirmed" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      alert("Failed to confirm order");
+    }
+  };
+
+  const handleReject = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await API.post(`/api/order/orders/${orderId}/reject`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId ? { ...order, status: "rejected" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error rejecting order:", error);
+      alert("Failed to reject order");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,89 +177,184 @@ function LoadItems() {
       const response = await API.get("/item/getloads", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setLoadedItems(response.data);
+      // Merge loads by driverId and aggregate quantities for same items
+      const mergedLoads = {};
+      response.data.forEach(load => {
+        const driverId = load.driverId._id;
+        if (!mergedLoads[driverId]) {
+          mergedLoads[driverId] = {
+            ...load,
+            items: [...load.items]
+          };
+        } else {
+          load.items.forEach(newItem => {
+            const existingItemIndex = mergedLoads[driverId].items.findIndex(
+              item => item.itemId._id === newItem.itemId._id
+            );
+            if (existingItemIndex === -1) {
+              mergedLoads[driverId].items.push(newItem);
+            } else {
+              mergedLoads[driverId].items[existingItemIndex].quantity += newItem.quantity;
+            }
+          });
+        }
+      });
+      setLoadedItems(Object.values(mergedLoads));
     } catch (err) {
       console.error("Error loading items:", err);
       alert("Failed to load items to vehicle");
     }
   };
+  const handleReset = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await API.delete("/item/resetloads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      alert(response.data.message);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting loads:", error);
+      alert("Failed to delete loads");
+    }
+  }
 
   return (
-    <div className="loaditems-container">
-      <h1>Load Items to Vehicles</h1>
-      <form className="loaditems-form" onSubmit={handleSubmit}>
-        <label>
-          Select Driver:
-          <select value={selectedDriver} onChange={(e) => setSelectedDriver(e.target.value)} required>
-            {drivers.map((driver) => (
-              <option key={driver._id} value={driver._id}>
-                {driver.drivername} ({driver.vehiclenumber})
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Select Item:
-          <select value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} required>
-            {items.map((item) => (
-              <option key={item._id} value={item._id}>
-                {item.itemname}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Select Quantity:
-          <select value={selectedCount} onChange={(e) => setSelectedCount(e.target.value)} required>
-            <option value="">--Select--</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="custom">Custom</option>
-          </select>
-        </label>
-
-        {selectedCount === 'custom' && (
+    <div>
+      <div className="loaditems-container">
+        <h1>Load Items to Vehicles</h1>
+        <form className="loaditems-form" onSubmit={handleSubmit}>
           <label>
-            Enter Custom Quantity:
-            <input
-              type="number"
-              min="1"
-              value={customCount}
-              onChange={(e) => setCustomCount(e.target.value)}
-              required
-            />
+            Select Driver:
+            <select value={selectedDriver} onChange={(e) => setSelectedDriver(e.target.value)} required>
+              {drivers.map((driver) => (
+                <option key={driver._id} value={driver._id}>
+                  {driver.drivername} ({driver.vehiclenumber})
+                </option>
+              ))}
+            </select>
           </label>
-        )}
 
-        <button type="submit">Submit Load</button>
-      </form>
+          <label>
+            Select Item:
+            <select value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} required>
+              {items.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.itemname}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <h2>Loaded Items</h2>
-      <div className="loaded-items-cards">
-        {loadedItems.length === 0 ? (
-          <p>No loaded items found.</p>
+          <label>
+            Select Quantity:
+            <select value={selectedCount} onChange={(e) => setSelectedCount(e.target.value)} required>
+              <option value="">--Select--</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+
+          {selectedCount === 'custom' && (
+            <label>
+              Enter Custom Quantity:
+              <input
+                type="number"
+                min="1"
+                value={customCount}
+                onChange={(e) => setCustomCount(e.target.value)}
+                required
+              />
+            </label>
+          )}
+
+          <button type="submit">Submit Load</button>
+        </form>
+
+        <button onClick={handleReset} style={{ marginTop: '20px', backgroundColor: '#FFBF00', padding: '10px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}>
+          Reset Loads
+        </button>
+
+        {/* New Customer Orders Section */}
+        <h2>Customer Orders</h2>
+        {orders.length === 0 ? (
+          <p>No customer orders found.</p>
         ) : (
-          loadedItems.map((load) => (
-            <div key={load._id} className="loaded-item-card">
-              <h3>
-                Vehicle: {load.driverId?.vehiclenumber} - {load.driverId?.drivername}
-              </h3>
-              <ul>
-                {load.items.map((item) => (
-                  <li key={item.itemId._id}>
-                    {item.itemId.itemname} - Quantity: {item.quantity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
+          <table className="orders-table" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+            <thead>
+              <tr>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Customer Name</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Seller Name</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Items</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Total</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Status</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(order => (
+                <tr key={order._id} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{order.customerId?.name || 'N/A'}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{order.sellerId?.name || 'N/A'}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                      {order.items.map((item, index) => (
+                        <li key={index}>{item.itemname} - Quantity: {item.quantity}</li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{order.total}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px', textTransform: 'capitalize' }}>{order.status || 'pending'}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                    <button
+                      onClick={() => handleConfirm(order._id)}
+                      disabled={order.status === 'confirmed'}
+                      style={{ marginRight: '8px', padding: '5px 10px', cursor: order.status === 'confirmed' ? 'not-allowed' : 'pointer' }}
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      onClick={() => handleReject(order._id)}
+                      disabled={order.status === 'rejected'}
+                      style={{ padding: '5px 10px', cursor: order.status === 'rejected' ? 'not-allowed' : 'pointer' }}
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
+
+        <h2>Loaded Items</h2>
+        <div className="loaded-items-cards">
+          {loadedItems.length === 0 ? (
+            <p>No loaded items found.</p>
+          ) : (
+            loadedItems.map((load) => (
+              <div key={load._id} className="loaded-item-card">
+                <h3>
+                  Vehicle: {load.driverId?.vehiclenumber} - {load.driverId?.drivername}
+                </h3>
+                <ul>
+                  {load.items.map((item) => (
+                    <li key={item.itemId._id}>
+                      {item.itemId.itemname} - Quantity: {item.quantity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          )}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

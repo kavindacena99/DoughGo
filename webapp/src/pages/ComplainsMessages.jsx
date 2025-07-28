@@ -62,6 +62,7 @@ function ComplainsMessages() {
   };
 
   return (
+    <div>
     <div className="complains-messages-container">
       <h1>Complaints</h1>
       {complaints.length === 0 ? (
@@ -106,6 +107,7 @@ function ComplainsMessages() {
           ))}
         </div>
       )}
+      </div>
       <Footer />
     </div>
   );
