@@ -27,6 +27,7 @@ function Navbar(){
                 <Link to="/adddrivers">Drivers</Link>
                 <Link to="/specialorders">Special Orders</Link>
                 <Link to="/complainsmessages">Complains & Messages</Link>
+                {token && <Link to="/profile" className="profile-link" style={{ marginLeft: "15px" }}>Profile</Link>}
                 {token && <a className="logout" onClick={handleLogout} style={{ cursor: "pointer" }}>Logout</a>}
             </div>
         </nav>

@@ -10,6 +10,7 @@ import LoadItems from "./pages/LoadItems";
 import AddDrivers from "./pages/AddDrivers";
 import SpecialOrders from "./pages/SpecialOrders";
 import ComplainsMessages from "./pages/ComplainsMessages";
+import Profile from "./pages/Profile";
 
 function App(){
   return(
@@ -25,6 +26,7 @@ function App(){
         <Route path="/adddrivers" element={<PrivateRoute><AddDrivers /></PrivateRoute>} />
         <Route path="/specialorders" element={<PrivateRoute><SpecialOrders /></PrivateRoute>} />
         <Route path="/complainsmessages" element={<PrivateRoute><ComplainsMessages /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       </Routes>
     </Router>
   );
