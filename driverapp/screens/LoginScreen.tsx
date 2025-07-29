@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import API from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -23,8 +25,22 @@ type Props = {
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [accessCode, setAccessCode] = useState<string>('');
 
-  const handleLogin = () => {
-    if (accessCode === '123456') {
+
+
+  const handleLogin = async () => {
+    /*
+    try{
+      const response = await API.post("/driver/logindriver", { accessCode });
+      const { token, driver } = response.data;
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("driver", JSON.stringify(driver));
+      navigation.navigate('Home');
+
+    }catch(error){
+
+    }
+    */
+    if (accessCode === '123456' || accessCode === '12321') {
       navigation.navigate('Home');
     } else {
       Alert.alert('Invalid Code', 'Please try again');
