@@ -1,4 +1,6 @@
 import React from 'react';
+import { useEffect } from 'react';
+import API from '../services/api'; // Adjust the import path as necessary
 import { View, Text, FlatList, Button, StyleSheet, Pressable } from 'react-native';
 
 type Item = {
@@ -21,6 +23,34 @@ const initialItems: Item[] = [
 
 const HomeScreen: React.FC = () => {
   const [itemList, setItemList] = React.useState<Item[]>(initialItems);
+  const [loading, setLoading] = React.useState<boolean>(true);
+
+  useEffect(() => {
+  const fetchItems = async () => {
+    try {
+      const response = await API.get('/orders/showorders');
+
+      const rawItems = Array.isArray(response.data)
+        ? response.data
+        : response.data.items || [];
+
+      const itemsWithCartFlag: Item[] = rawItems.map((item: any) => ({
+        id: item._id || item.id,  
+        itemname: item.itemname,
+        itemprice: item.itemprice,
+        addtocart: false,
+      }));
+
+        setItemList(itemsWithCartFlag);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItems();
+  }, []);
 
   const markSold = (id: string) => {
     const updated = itemList.map(item =>
@@ -58,7 +88,6 @@ const HomeScreen: React.FC = () => {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
       />
-      <Text style={styles.route}>📍 Route: Colombo ➝ Kandy</Text>
     </View>
   );
 };
