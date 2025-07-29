@@ -1,7 +1,6 @@
-import React from 'react';
-import { useEffect } from 'react';
-import API from '../services/api'; // Adjust the import path as necessary
-import { View, Text, FlatList, Button, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import API from '../services/api'; 
+import { View, Text, FlatList, StyleSheet, Pressable, Linking } from 'react-native';
 
 type Item = {
   id: string;
@@ -12,13 +11,15 @@ type Item = {
   itemname2: string;
   count1:number;
   count2:number;
+  latitude: number;
+  longitude: number;
 };
 
 const initialItems: Item[] = [
-  { id: '1', name: 'Dasun', itemname1:'Bread', itemname2:'Bun', count1:1, count2:2, total:300.00, sold: false },
-  { id: '2', name: 'Perera', itemname1:'Butter Cake', itemname2:'Chocolate Cake', count1:1, count2:2, total:1100.00, sold: false },
-  { id: '3', name: 'Ishan', itemname1:'Bun' , itemname2:'Bread', count1:2, count2:3, total:580.00, sold: false },
-  { id: '4', name: 'Dasun', itemname1:'Bread', itemname2:'Bun', count1:1, count2:2, total:300.00, sold: false },
+  { id: '1', name: 'Dasun', itemname1:'Bread', itemname2:'Bun', count1:1, count2:2, total:300.00, sold: false, latitude: 6.9271, longitude: 79.8612 }, // Colombo
+  { id: '2', name: 'Perera', itemname1:'Butter Cake', itemname2:'Chocolate Cake', count1:1, count2:2, total:1100.00, sold: false, latitude: 7.2906, longitude: 80.6337 }, // Kandy
+  { id: '3', name: 'Ishan', itemname1:'Bun', itemname2:'Bread', count1:2, count2:3, total:580.00, sold: false, latitude: 6.0535, longitude: 80.2200 }, // Galle
+  { id: '4', name: 'Dasun', itemname1:'Bread', itemname2:'Bun', count1:1, count2:2, total:300.00, sold: false, latitude: 8.3114, longitude: 80.4037 }, // Anuradhapura
 ];
 
 const HomeScreen: React.FC = () => {
@@ -26,22 +27,27 @@ const HomeScreen: React.FC = () => {
   const [loading, setLoading] = React.useState<boolean>(true);
 
   useEffect(() => {
-  const fetchItems = async () => {
-    try {
-      const response = await API.get('/orders/showorders');
+    const fetchItems = async () => {
+      try {
+        const response = await API.get('/orders/showorders');
+        const rawItems = Array.isArray(response.data)
+          ? response.data
+          : response.data.items || [];
 
-      const rawItems = Array.isArray(response.data)
-        ? response.data
-        : response.data.items || [];
+        const itemsWithCoords: Item[] = rawItems.map((item: any) => ({
+          id: item._id || item.id,
+          name: item.name || "Unknown",
+          itemname1: item.itemname1 || "Unknown",
+          itemname2: item.itemname2 || "Unknown",
+          count1: item.count1 || 0,
+          count2: item.count2 || 0,
+          total: item.total || 0,
+          sold: false,
+          latitude: item.latitude || 6.9271,  // default Colombo
+          longitude: item.longitude || 79.8612,
+        }));
 
-      const itemsWithCartFlag: Item[] = rawItems.map((item: any) => ({
-        id: item._id || item.id,  
-        itemname: item.itemname,
-        itemprice: item.itemprice,
-        addtocart: false,
-      }));
-
-        setItemList(itemsWithCartFlag);
+        setItemList(itemsWithCoords);
       } catch (error) {
         console.error('Error fetching items:', error);
       } finally {
@@ -58,8 +64,14 @@ const HomeScreen: React.FC = () => {
     );
     setItemList(updated);
   };
+  const openRoute = (lat: number, lng: number) => {
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+  Linking.openURL(url).catch(err => console.error('Error opening map:', err));
+};
+
 
   const renderItem = ({ item }: { item: Item }) => (
+  <Pressable onPress={() => openRoute(item.latitude, item.longitude)}>
     <View style={styles.card}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.itemName}>{item.name}</Text>
@@ -76,7 +88,9 @@ const HomeScreen: React.FC = () => {
         </Pressable>
       )}
     </View>
-  );
+  </Pressable>
+);
+
 
   return (
     <View style={styles.container}>
@@ -101,7 +115,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 16,
   },
-
   title: {
     fontSize: 26,
     fontWeight: 'bold',
@@ -109,11 +122,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
   },
-
   listContainer: {
     paddingBottom: 20,
   },
-
   card: {
     backgroundColor: '#ffffff',
     padding: 16,
@@ -125,19 +136,16 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-
   itemName: {
     fontSize: 20,
     fontWeight: '600',
     color: '#444',
   },
-
   status: {
     marginTop: 8,
     fontSize: 16,
     color: '#888',
   },
-
   button: {
     marginTop: 12,
     backgroundColor: '#f96c21',
@@ -145,17 +153,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
-  },
-
-  route: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#555',
   },
 });
